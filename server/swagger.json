@@ -1,0 +1,187 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "0.0.1", 
+        "title": "Node API Server",
+        "description": "A Simple Node API Server for Products",
+        "license": {
+        "name": "MIT",
+        "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "Products",
+            "description": "API for products in the system"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+
+    "paths": {
+        "/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get all products in system",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Products"
+                        }
+                    }
+                }
+            },
+
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "create a new product",
+                "parameters": [
+                    {
+                        "name": "product",
+                        "in": "body",
+                        "description": "product to be created ",
+                        "schema": {
+                            "$ref": "#/definitions/Product"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "New product is created",
+                        "schema": {
+                        "$ref": "#/definitions/Product"
+                        }
+                    },
+                    "300": {
+                        "description": "Product already exists"
+                    }
+                }
+            }
+        },
+
+        "/products/{prod_code}": {
+            "parameters": [
+                {
+                "name": "prod_code",
+                "in": "path",
+                "required": true,
+                "description": "The code of the product that we want to find",
+                "type": "string"
+                }
+            ],
+
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get the product with the given code",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Products"
+                        }
+                    },
+                    "404": {
+                        "description": "the product does not exist"
+                    }
+                }
+            },
+
+            "put": {
+                "summary": "Update the product with given code",
+                "tags": [
+                    "Product"
+                ],
+                "parameters": [
+                    {
+                    "name": "product",
+                    "in": "body",
+                    "description": "product with the new values of properties",
+                    "schema": {
+                    "$ref": "#/definitions/Product"
+                    }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "product is updated",
+                        "schema": {
+                            "$ref": "#/definitions/product"
+                        }
+                    },
+                    "404": {
+                        "description": "product does not exist"
+                    }
+                }
+            },
+
+            "delete": {
+                "summary": "Delete the product with given code",
+                "tags": [
+                    "Products"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "product is deleted",
+                        "schema": {
+                            "$ref": "#/definitions/Product"
+                        }
+                    },
+                    "404": {
+                        "description": "product does not exist"
+                    }
+                }
+            }
+        }   
+    },
+
+   
+    "definitions": {
+        "Product": {
+            "required": [
+                "code",
+                "name",
+                "color",
+                "brand"
+            ],
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "uniqueItems": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "color": {
+                    "type": "string"
+                },
+                "brand": {
+                    "type": "string"
+                }
+            }
+        },
+
+        "Products": {
+            "type": "array",
+            "$ref": "#/definitions/Product"
+        }
+    }
+}

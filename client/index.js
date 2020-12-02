@@ -1,7 +1,7 @@
 const express = require('express');
 const fetch = require("node-fetch");
 const bodyParser = require('body-parser');
-const readline = require('readline') . createInterface( {
+const readline = require('readline') . createInterface({
     input: process. stdin,
     output:process.stdout
     })
@@ -12,37 +12,42 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.listen(port);
-console.log('Client app started on: port' +port);
+console.log('Client app started on port: ' +port);
 
-var server = "http://localhost:3000/products";
-var route;
-var method;
-var body;
-var url;
+// set the server address
+var server = "http://localhost:3000/"; 
+
+// declare variables
+var route, method, body, url;
 
 
-readline.question('Enter the route: http://localhost:3000/', (input_route)=>{
-    // console. log(`Hi ${input_route}!`);
-    route = input_route;
-    url = 'http://localhost:3000/'+route;
-    readline.question('Method: ', (input_method)=>{
-        method = input_method.toUpperCase();
-        if((method == 'GET')||(method == '')||(method == 'DELETE')){
-            fetch_data(url,method);
-        }else if((method === 'POST')||(method == 'PUT')){
-            readline.question('Body: ', (input_body)=>{
-                body = input_body;
-                readline.close();
-                fetch_data(url, method,body);
-            })
-        }else{
-            console.log('invalid method');
-        }
-        // readline. close();
+
+// this handles getting the route and method from the CL calls the fetch_data function to make the request
+
+var readIn = function(){
+    readline.question('Enter the route: '+server, (input_route)=>{
+        route = input_route;
+        url = server+route;
+        readline.question('Method: ', (input_method)=>{
+            method = input_method.toUpperCase();
+            if((method == 'GET')||(method == '')||(method == 'DELETE')){
+                fetch_data(url,method);
+            }else if((method == 'POST')||(method == 'PUT')){
+                readline.question('Body(json format): ', (input_body)=>{
+                    body = input_body;
+                    fetch_data(url, method,body);
+                })
+            }else{
+                console.log('invalid method');
+            }
+        });
     });
-    // readline. close();
-});
+}
 
+readIn();
+
+
+// this function makes the http request to the server specified, ouputs the response, and restarts the process.
 var fetch_data = function(url, method, body){
     var options = {
         method: method,
@@ -53,34 +58,22 @@ var fetch_data = function(url, method, body){
         body: body
     };
     fetch(url,options)
-        // .then((response) => response.json())
-        .then((response)=> response.text())
-        .then((data) => console.log(data))
-        .catch((err) => console.log(err));
+        .then((response) => response.text())
+        .then((data) =>{
+            try{
+                data = JSON.parse(data);
+                console.log(data);
+            }catch(parse_error){
+                console.log(data)
+            }
+            finally{
+                console.log('________________________________________________________\n')  //just house keeping
+                readIn()    //restart the process
+            }
+        })
+        .catch((err) =>{
+            console.log(err)
+            console.log('________________________________________________________\n')   //just house keeping
+            readIn()       //restart the process
+        });
 }
-
-// .then((response) => response.json())
-
-// var post_data = function(){
-
-// }
-// var options = {
-//     method: 'POST',
-//     // mode: 'cors',
-//     headers: {
-//         'Accept': 'application/json',
-//         'Content-Type': 'application/json;charset=UTF-8'
-//     },
-//     body: JSON.stringify({
-//         "code": "code3",
-//         "name": "name3",
-//         "color": "violet",
-//         "brand": "brand3"
-//     })
-// };
-
-
-// fetch(client,options)
-//     .then((response) => response.json())
-//     .then((data) => console.log(data))
-//     .catch((err) => console.log(err));
